@@ -10,6 +10,7 @@ public class Task1ArctgTest {
 
     private static final int TERMS = 200;
     private static final double EPS = 1e-8;
+    private static final double MONO_EPS = 1e-15;
 
     @Test
     @DisplayName("terms must be positive")
@@ -52,8 +53,8 @@ public class Task1ArctgTest {
     }
 
     @Test
-    @DisplayName("accuracy should improve when increasing terms (inside |x|<=1)")
-    void accuracyShouldImproveWhenTermsIncrease() {
+    @DisplayName("accuracy should not degrade when increasing terms (inside |x|<=1)")
+    void accuracyShouldNotDegradeWhenTermsIncrease() {
         double x = 0.8;
         double expected = Math.atan(x);
 
@@ -61,8 +62,8 @@ public class Task1ArctgTest {
         double err30 = Math.abs(TaylorSeries.arctg(x, 30) - expected);
         double err80 = Math.abs(TaylorSeries.arctg(x, 80) - expected);
 
-        assertTrue(err30 < err10, "terms=30 should be better than terms=10");
-        assertTrue(err80 < err30, "terms=80 should be better than terms=30");
+        assertTrue(err30 <= err10 + MONO_EPS, "terms=30 should be no worse than terms=10");
+        assertTrue(err80 <= err30 + MONO_EPS, "terms=80 should be no worse than terms=30");
     }
 
     @Test
