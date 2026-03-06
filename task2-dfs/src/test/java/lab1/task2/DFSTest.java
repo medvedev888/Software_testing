@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Тестирование обхода графа в глубину")
-public class Task2DFSTest {
+public class DFSTest {
     private DFS dfs;
 
 

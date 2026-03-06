@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Taylor series: arctg(x)")
-public class Task1ArctgTest {
+public class ArctgTest {
 
     private static final int TERMS = 200;
     private static final double EPS = 1e-8;
