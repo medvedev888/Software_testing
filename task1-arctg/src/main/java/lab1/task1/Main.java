@@ -1,17 +1,18 @@
 package lab1.task1;
 
 public class Main {
-    public static void main(String[] args) {
-        int terms = 80;
 
-        for (double x = -10; x <= 10; x += 0.5) {
-            double approx = TaylorSeries.arctg(x, terms);
-            double exact = Math.atan(x);
-            double err = Math.abs(approx - exact);
+    public static void main(String[] args) {
+        int terms = 200;
+
+        for (double argument = -3.0; argument <= 3.0; argument += 0.25) {
+            double taylorValue = TaylorSeries.arctg(argument, terms);
+            double mathValue = Math.atan(argument);
+            double error = Math.abs(taylorValue - mathValue);
 
             System.out.printf(
-                    "x=%6.2f | arctg≈% .12f | atan=% .12f | |err|=%.3e%n",
-                    x, approx, exact, err
+                    "arctg(%.2f) = %.10f | Math.atan(%.2f) = %.10f | error = %.10f%n",
+                    argument, taylorValue, argument, mathValue, error
             );
         }
     }
