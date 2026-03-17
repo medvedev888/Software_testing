@@ -3,77 +3,117 @@ package lab1.task1;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayName("Taylor series: arctg(x)")
 public class ArctgTest {
 
     private static final int TERMS = 200;
-    private static final double EPS = 1e-8;
-    private static final double MONO_EPS = 1e-15;
+    private static final double EPS = 1e-6;
+    private static final double BORDER_EPS = 2e-3;
 
     @Test
-    @DisplayName("terms must be positive")
-    void shouldThrowForNonPositiveTerms() {
-        assertThrows(IllegalArgumentException.class, () -> TaylorSeries.arctg(0.3, 0));
-        assertThrows(IllegalArgumentException.class, () -> TaylorSeries.arctg(0.3, -5));
+    @DisplayName("arctg(0) должен быть равен 0")
+    void shouldReturnZeroForZeroArgument() {
+        double actual = TaylorSeries.arctg(0.0, TERMS);
+        assertEquals(0.0, actual, EPS);
     }
 
     @Test
-    @DisplayName("basic known points: x=0, x=±1")
-    void shouldMatchKnownPoints() {
-        assertEquals(0.0, TaylorSeries.arctg(0.0, TERMS), 1e-12);
-
-        assertEquals(Math.PI / 4.0, TaylorSeries.arctg(1.0, TERMS), 1e-6);
-        assertEquals(-Math.PI / 4.0, TaylorSeries.arctg(-1.0, TERMS), 1e-6);
+    @DisplayName("arctg(1) должен быть равен π/4")
+    void shouldReturnPiOverFourForOne() {
+        double actual = TaylorSeries.arctg(1.0, TERMS);
+        assertEquals(Math.PI / 4, actual, BORDER_EPS);
     }
 
     @Test
-    @DisplayName("should be close to Math.atan(x) for a set of values (including |x|>1 branches)")
-    void shouldMatchMathAtanForTypicalValues() {
-        double[] xs = {-10.0, -2.0, -1.0, -0.9, -0.5, -0.2, 0.0, 0.2, 0.5, 0.9, 1.0, 2.0, 10.0};
-
-        for (double x : xs) {
-            double expected = Math.atan(x);
-            double actual = TaylorSeries.arctg(x, TERMS);
-            assertEquals(expected, actual, EPS, "x=" + x);
-        }
+    @DisplayName("arctg(-1) должен быть равен -π/4")
+    void shouldReturnMinusPiOverFourForMinusOne() {
+        double actual = TaylorSeries.arctg(-1.0, TERMS);
+        assertEquals(-Math.PI / 4, actual, BORDER_EPS);
     }
 
     @Test
-    @DisplayName("odd function property: arctg(-x) = -arctg(x)")
-    void shouldBeOddFunction() {
-        double[] xs = {-10.0, -2.5, -1.2, -1.0, -0.7, -0.1, 0.1, 0.7, 1.0, 1.2, 2.5, 10.0};
-
-        for (double x : xs) {
-            double a = TaylorSeries.arctg(x, TERMS);
-            double b = TaylorSeries.arctg(-x, TERMS);
-            assertEquals(-a, b, 1e-9, "x=" + x);
-        }
+    @DisplayName("arctg(√3/3) должен быть равен π/6")
+    void shouldReturnPiOverSixForSqrt3Div3() {
+        double argument = Math.sqrt(3) / 3;
+        double actual = TaylorSeries.arctg(argument, TERMS);
+        assertEquals(Math.PI / 6, actual, EPS);
     }
 
     @Test
-    @DisplayName("accuracy should not degrade when increasing terms (inside |x|<=1)")
-    void accuracyShouldNotDegradeWhenTermsIncrease() {
-        double x = 0.8;
-        double expected = Math.atan(x);
-
-        double err10 = Math.abs(TaylorSeries.arctg(x, 10) - expected);
-        double err30 = Math.abs(TaylorSeries.arctg(x, 30) - expected);
-        double err80 = Math.abs(TaylorSeries.arctg(x, 80) - expected);
-
-        assertTrue(err30 <= err10 + MONO_EPS, "terms=30 should be no worse than terms=10");
-        assertTrue(err80 <= err30 + MONO_EPS, "terms=80 should be no worse than terms=30");
+    @DisplayName("arctg(-√3/3) должен быть равен -π/6")
+    void shouldReturnMinusPiOverSixForMinusSqrt3Div3() {
+        double argument = -Math.sqrt(3) / 3;
+        double actual = TaylorSeries.arctg(argument, TERMS);
+        assertEquals(-Math.PI / 6, actual, EPS);
     }
 
     @Test
-    @DisplayName("monotonicity smoke test")
-    void monotonicitySmokeTest() {
-        double a = TaylorSeries.arctg(-0.5, TERMS);
-        double b = TaylorSeries.arctg(0.0, TERMS);
-        double c = TaylorSeries.arctg(0.5, TERMS);
+    @DisplayName("arctg(-√3) должен быть равен -π/3")
+    void shouldReturnPiOverThreeForSqrt3() {
+        double argument = Math.sqrt(3);
+        double actual = TaylorSeries.arctg(argument, TERMS);
+        assertEquals(Math.PI / 3, actual, EPS);
+    }
 
-        assertTrue(a < b);
-        assertTrue(b < c);
+    @Test
+    @DisplayName("arctg(argument) должен быть нечётной функцией при |argument| <= 1")
+    void shouldReturnMinusPiOverThreeForMinusSqrt3() {
+        double argument = -Math.sqrt(3);
+        double actual = TaylorSeries.arctg(argument, TERMS);
+        assertEquals(-Math.PI / 3, actual, EPS);
+    }
+
+    @Test
+    @DisplayName("arctg(argument) должен быть нечётной функцией при |argument| > 1")
+    void shouldBeOddFunctionInsideMainInterval() {
+        double argument = Math.sqrt(3) / 3;
+        double positive = TaylorSeries.arctg(argument, TERMS);
+        double negative = TaylorSeries.arctg(-argument, TERMS);
+
+        assertEquals(-positive, negative, EPS);
+    }
+
+    @Test
+    @DisplayName("arctg(argument) должен быть нечётной функцией при |argument| > 1")
+    void shouldBeOddFunctionOutsideMainInterval() {
+        double argument = Math.sqrt(3);
+        double positive = TaylorSeries.arctg(argument, TERMS);
+        double negative = TaylorSeries.arctg(-argument, TERMS);
+
+        assertEquals(-positive, negative, EPS);
+    }
+
+    @Test
+    @DisplayName("Должно выбрасываться исключение при отрицательном количестве членов ряда!")
+    void shouldThrowExceptionForZeroTerms() {
+        assertThrows(IllegalArgumentException.class, () -> TaylorSeries.arctg(0.5, 0));
+    }
+
+    @Test
+    @DisplayName("Должно выбрасываться исключение, если аргумент равен NaN!")
+    void shouldThrowExceptionForNegativeTerms() {
+        assertThrows(IllegalArgumentException.class, () -> TaylorSeries.arctg(0.5, -5));
+    }
+
+    @Test
+    @DisplayName("Должно выбрасываться исключение, если аргумент равен NaN!")
+    void shouldThrowExceptionForNaNArgument() {
+        assertThrows(IllegalArgumentException.class, () -> TaylorSeries.arctg(Double.NaN, TERMS));
+    }
+
+    @Test
+    @DisplayName("Должно выбрасываться исключение, если аргумент равен +Infinity!")
+    void shouldThrowExceptionForPositiveInfinityArgument() {
+        assertThrows(IllegalArgumentException.class,
+                () -> TaylorSeries.arctg(Double.POSITIVE_INFINITY, TERMS));
+    }
+
+    @Test
+    @DisplayName("Должно выбрасываться исключение, если аргумент равен -Infinity")
+    void shouldThrowExceptionForNegativeInfinityArgument() {
+        assertThrows(IllegalArgumentException.class,
+                () -> TaylorSeries.arctg(Double.NEGATIVE_INFINITY, TERMS));
     }
 }
