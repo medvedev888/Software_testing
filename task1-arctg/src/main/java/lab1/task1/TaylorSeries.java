@@ -1,47 +1,34 @@
 package lab1.task1;
 
 public class TaylorSeries {
-
-    public static double arctg(double x, int terms) {
-        if (terms <= 0) {
-            throw new IllegalArgumentException("terms must be positive");
-        }
-
-        if (x == 1.0) return Math.PI / 4.0;
-        if (x == -1.0) return -Math.PI / 4.0;
-
-        if (x > 1.0) {
-            return Math.PI / 2.0 - arctg(1.0 / x, terms);
-        }
-        if (x < -1.0) {
-            return -Math.PI / 2.0 - arctg(1.0 / x, terms);
-        }
-
-        if (Math.abs(x) > 0.5) {
-            double s = x > 0 ? 1.0 : -1.0;
-            double y = (x - s) / (1.0 + s * x);
-            return s * (Math.PI / 4.0) + arctg(y, terms);
-        }
-
+    public static double arctgSeries(double argument, int terms){
         double sum = 0.0;
-        double c = 0.0;
+        double power = argument;
 
-        double termPow = x;
-        double x2 = x * x;
-
-        for (int k = 0; k < terms; k++) {
-            double denom = 2.0 * k + 1.0;
-            double add = termPow / denom;
-            if ((k & 1) == 1) add = -add;
-
-            double y = add - c;
-            double t = sum + y;
-            c = (t - sum) - y;
-            sum = t;
-
-            termPow *= x2;
+        for(int i = 0; i < terms; i++){
+            double term = power / (2 * i + 1);
+            sum = (i % 2 == 0) ? sum + term : sum - term;
+            power *= Math.pow(argument, 2);
         }
 
         return sum;
+    }
+
+    public static double arctg(double argument, int terms){
+        if(Double.isNaN(argument) || Double.isInfinite(argument)){
+            throw new IllegalArgumentException("Argument must be a finite number!");
+        }
+
+        if(terms <= 0){
+            throw new IllegalArgumentException("Number of terms must be positive!");
+        }
+
+        if(argument > 1.0){
+            return Math.PI / 2 - arctgSeries(1.0 / argument, terms);
+        } else if(argument < -1.0){
+            return -Math.PI / 2 - arctgSeries(1.0 / argument, terms);
+        } else {
+            return arctgSeries(argument, terms);
+        }
     }
 }
