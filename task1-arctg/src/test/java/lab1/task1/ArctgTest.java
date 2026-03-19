@@ -36,75 +36,75 @@ public class ArctgTest {
     @Test
     @DisplayName("arctg(√3/3) должен быть равен π/6")
     void shouldReturnPiOverSixForSqrt3Div3() {
-        double argument = Math.sqrt(3) / 3;
-        double actual = TaylorSeries.arctg(argument, TERMS);
+        double x = Math.sqrt(3) / 3;
+        double actual = TaylorSeries.arctg(x, TERMS);
         assertEquals(Math.PI / 6, actual, EPS);
     }
 
     @Test
     @DisplayName("arctg(-√3/3) должен быть равен -π/6")
     void shouldReturnMinusPiOverSixForMinusSqrt3Div3() {
-        double argument = -Math.sqrt(3) / 3;
-        double actual = TaylorSeries.arctg(argument, TERMS);
+        double x = -Math.sqrt(3) / 3;
+        double actual = TaylorSeries.arctg(x, TERMS);
         assertEquals(-Math.PI / 6, actual, EPS);
     }
 
     @Test
-    @DisplayName("arctg(-√3) должен быть равен -π/3")
+    @DisplayName("arctg(√3) должен быть равен π/3")
     void shouldReturnPiOverThreeForSqrt3() {
-        double argument = Math.sqrt(3);
-        double actual = TaylorSeries.arctg(argument, TERMS);
+        double x = Math.sqrt(3);
+        double actual = TaylorSeries.arctg(x, TERMS);
         assertEquals(Math.PI / 3, actual, EPS);
     }
 
     @Test
-    @DisplayName("arctg(argument) должен быть нечётной функцией при |argument| <= 1")
+    @DisplayName("arctg(-√3) должен быть равен -π/3")
     void shouldReturnMinusPiOverThreeForMinusSqrt3() {
-        double argument = -Math.sqrt(3);
-        double actual = TaylorSeries.arctg(argument, TERMS);
+        double x = -Math.sqrt(3);
+        double actual = TaylorSeries.arctg(x, TERMS);
         assertEquals(-Math.PI / 3, actual, EPS);
     }
 
     @Test
-    @DisplayName("arctg(argument) должен быть нечётной функцией при |argument| > 1")
+    @DisplayName("arctg(x) должен быть нечётной функцией при |x| <= 1")
     void shouldBeOddFunctionInsideMainInterval() {
-        double argument = Math.sqrt(3) / 3;
-        double positive = TaylorSeries.arctg(argument, TERMS);
-        double negative = TaylorSeries.arctg(-argument, TERMS);
+        double x = Math.sqrt(3) / 3;
+        double positive = TaylorSeries.arctg(x, TERMS);
+        double negative = TaylorSeries.arctg(-x, TERMS);
 
         assertEquals(-positive, negative, EPS);
     }
 
     @Test
-    @DisplayName("arctg(argument) должен быть нечётной функцией при |argument| > 1")
+    @DisplayName("arctg(x) должен быть нечётной функцией при |x| > 1")
     void shouldBeOddFunctionOutsideMainInterval() {
-        double argument = Math.sqrt(3);
-        double positive = TaylorSeries.arctg(argument, TERMS);
-        double negative = TaylorSeries.arctg(-argument, TERMS);
+        double x = Math.sqrt(3);
+        double positive = TaylorSeries.arctg(x, TERMS);
+        double negative = TaylorSeries.arctg(-x, TERMS);
 
         assertEquals(-positive, negative, EPS);
     }
 
     @Test
-    @DisplayName("Должно выбрасываться исключение при отрицательном количестве членов ряда!")
+    @DisplayName("Должно выбрасываться исключение при нулевом количестве членов ряда")
     void shouldThrowExceptionForZeroTerms() {
         assertThrows(IllegalArgumentException.class, () -> TaylorSeries.arctg(0.5, 0));
     }
 
     @Test
-    @DisplayName("Должно выбрасываться исключение, если аргумент равен NaN!")
+    @DisplayName("Должно выбрасываться исключение при отрицательном количестве членов ряда")
     void shouldThrowExceptionForNegativeTerms() {
         assertThrows(IllegalArgumentException.class, () -> TaylorSeries.arctg(0.5, -5));
     }
 
     @Test
-    @DisplayName("Должно выбрасываться исключение, если аргумент равен NaN!")
+    @DisplayName("Должно выбрасываться исключение, если аргумент равен NaN")
     void shouldThrowExceptionForNaNArgument() {
         assertThrows(IllegalArgumentException.class, () -> TaylorSeries.arctg(Double.NaN, TERMS));
     }
 
     @Test
-    @DisplayName("Должно выбрасываться исключение, если аргумент равен +Infinity!")
+    @DisplayName("Должно выбрасываться исключение, если аргумент равен +Infinity")
     void shouldThrowExceptionForPositiveInfinityArgument() {
         assertThrows(IllegalArgumentException.class,
                 () -> TaylorSeries.arctg(Double.POSITIVE_INFINITY, TERMS));
