@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Тестирование симуляции сцены")
 public class SimulationServiceTest {
@@ -47,5 +48,70 @@ public class SimulationServiceTest {
         );
 
         assertEquals(expectedTrace, robot.getTrace());
+    }
+
+
+    @Test
+    @DisplayName("После рывка головы следует покачивание")
+    void headMotionOrder() {
+        Robot robot = RobotFactory.createRobot(Position.CORNER);
+        Person person = new Person("Триллиан");
+
+        simulation.run(robot, person);
+
+        List<String> trace = robot.getTrace();
+
+        int jerkIndex = trace.indexOf("рывок головой вверх");
+        int shakeIndex = trace.indexOf("покачивание головой");
+
+        assertTrue(jerkIndex + 1 == shakeIndex);
+    }
+
+
+    @Test
+    @DisplayName("После попытки движения робот останавливается")
+    void movementLeadsToStop() {
+        Robot robot = RobotFactory.createRobot(Position.CORNER);
+        Person person = new Person("Триллиан");
+
+        simulation.run(robot, person);
+
+        List<String> trace = robot.getTrace();
+
+        int moveIndex = trace.indexOf("робот попытался пройти");
+        int stopIndex = trace.indexOf("робот остановился");
+
+        assertTrue(moveIndex < stopIndex);
+    }
+
+
+    @Test
+    @DisplayName("Робот смотрит только после остановки")
+    void lookAfterStop() {
+        Robot robot = RobotFactory.createRobot(Position.CORNER);
+        Person person = new Person("Триллиан");
+
+        simulation.run(robot, person);
+
+        List<String> trace = robot.getTrace();
+
+        int stopIndex = trace.indexOf("робот остановился");
+        int lookIndex = trace.indexOf("робот смотрит на сквозь левое плечо Триллиан");
+
+        assertTrue(stopIndex < lookIndex);
+    }
+
+
+    @Test
+    @DisplayName("Робот взаимодействует с Триллиан")
+    void robotInteractsWithPerson() {
+        Robot robot = RobotFactory.createRobot(Position.CORNER);
+        Person person = new Person("Триллиан");
+
+        simulation.run(robot, person);
+
+        String lastAction = robot.getTrace().get(5);
+
+        assertTrue(lastAction.contains("Триллиан"));
     }
 }
